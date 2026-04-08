@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: moodle_root
+      MYSQL_DATABASE: moodle_db
+      MYSQL_USER: moodle_user
+      MYSQL_PASSWORD: moodle_pass
+    volumes:
+      - db_data:/var/lib/mysql
+  
+  moodle:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      MOODLE_DBTYPE: mysqli
+      MOODLE_DBHOST: db
+      MOODLE_DBNAME: moodle_db
+      MOODLE_DBUSER: moodle_user
+      MOODLE_DBPASSWORD: moodle_pass
+    depends_on:
+      - db
+    volumes:
+      - ./moodledata:/var/www/html/moodledata
+      - ./moodle:/var/www/html/moodle
+
+volumes:
+  db_data:
